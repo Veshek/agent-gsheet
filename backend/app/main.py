@@ -1,7 +1,17 @@
 from fastapi import FastAPI
 from app.api import auth
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+# Setup CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://zp1v56uxy8rdx5ypatb0ockcb9tr6a-oci3--5173--31ca1d38.local-credentialless.webcontainer-api.io"],  # Replace with your frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Include the auth router with a prefix so all auth endpoints are under /auth
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
