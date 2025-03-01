@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 import requests
 from app.core.config import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI, GOOGLE_TOKEN_URL
-from app.models.schemas import OAuthCode, RefreshTokenRequest
+from app.db.schemas import OAuthCode, RefreshTokenRequest
 
 router = APIRouter()
 

@@ -1,8 +1,15 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from app.api import auth
 from fastapi.middleware.cors import CORSMiddleware
+from app.db.database import init_db
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()  # This will create the tables only if they don't exist
+    yield
+
+app = FastAPI(lifespan=lifespan)
 
 # Setup CORS middleware
 app.add_middleware(
