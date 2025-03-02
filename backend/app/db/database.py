@@ -12,3 +12,10 @@ Base = declarative_base()
 def init_db():
     from app.db.models import User  # Import your models so they get registered
     Base.metadata.create_all(bind=engine)
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
