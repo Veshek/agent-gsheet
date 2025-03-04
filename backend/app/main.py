@@ -14,7 +14,10 @@ app = FastAPI(lifespan=lifespan)
 # Setup CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://zp1v56uxy8rdx5ypatb0ockcb9tr6a-oci3--5173--31ca1d38.local-credentialless.webcontainer-api.io"],  # Replace with your frontend URL
+    allow_origins=[
+        "https://zp1v56uxy8rdx5ypatb0ockcb9tr6a-oci3--5173--31ca1d38.local-credentialless.webcontainer-api.io",
+        "https://astounding-elf-572548.netlify.app",
+        ],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
