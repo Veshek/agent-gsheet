@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from fastapi import HTTPException
 import requests
 
-from app.db.models import User as UserModel
+from app.db.models import User as UserDB
 from app.core.config import (
     JWT_SECRET_KEY, 
     JWT_ALGORITHM,
@@ -26,7 +26,7 @@ class User:
 
     def create(self, user_info: Dict, tokens: Dict) -> None:
         """Create a new user"""
-        user_model = UserModel(
+        user_model = UserDB(
             id=user_info.get('id'),  # or generate a unique ID
             email=user_info['email'],
             google_access_token=tokens['access_token'],
@@ -45,7 +45,7 @@ class User:
 
     def get_by_id(self, user_id: str) -> Optional['User']:
         """Get user by ID"""
-        user_model = self.db.query(UserModel).filter(UserModel.id == user_id).first()
+        user_model = self.db.query(UserDB).filter(UserDB.id == user_id).first()
         if user_model:
             self._load_from_model(user_model)
             return self
@@ -53,7 +53,7 @@ class User:
     
     def get_by_email(self, email: str) -> Optional['User']:
         """Get user by email"""
-        user_model = self.db.query(UserModel).filter(UserModel.email == email).first()
+        user_model = self.db.query(UserDB).filter(UserDB.email == email).first()
         if user_model:
             self._load_from_model(user_model)
             return self
@@ -149,7 +149,7 @@ class User:
 
     def update_tokens(self, tokens: Dict) -> None:
         """Update user's OAuth tokens"""
-        user_model = self.db.query(UserModel).filter(UserModel.id == self.id).first()
+        user_model = self.db.query(UserDB).filter(UserDB.id == self.id).first()
         if user_model:
             user_model.google_access_token = tokens['access_token']
             if 'refresh_token' in tokens:
@@ -171,7 +171,7 @@ class User:
             raise HTTPException(status_code=401, detail="Failed to refresh Google token")
         return response.json()
 
-    def _load_from_model(self, user_model: UserModel) -> None:
+    def _load_from_model(self, user_model: UserDB) -> None:
         """Load user model data into class instance"""
         self.id = user_model.id
         self.email = user_model.email
