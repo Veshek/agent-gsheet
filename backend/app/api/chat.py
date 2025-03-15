@@ -20,14 +20,14 @@ async def stream_response(user_input: str):
     # Replace this with the URL of your own deployed graph
     client = get_client(url=LANGGRAPH_SERVER)
     input_message = HumanMessage(content=user_input)
-    #%%
     thread = await client.threads.create()
-    print("here")
-        # Start conversation with the initial message
-    async for event in client.runs.stream(thread["thread_id"],assistant_id="agent",input={"messages": [input_message]},stream_mode="updates"):
-        if event["event"] == "on_chat_model_stream" and event['metadata'].get('langgraph_node','') == "assistant":
-            data = event["data"]
-            yield data["chunk"].content
+    # Start conversation with the initial message
+    async for event in client.runs.stream(thread["thread_id"], 
+                                        assistant_id="agent", 
+                                        input={"messages": [input_message]}, 
+                                        stream_mode="messages-tuple"):
+        if event.event == 'messages':
+            yield event.data[0]["content"]
 
 @router.websocket("/ws")
 async def chat_websocket(websocket: WebSocket):
