@@ -24,7 +24,7 @@ async def stream_response(user_input: str):
     # Start conversation with the initial message
     async for event in client.runs.stream(thread["thread_id"], 
                                         assistant_id="agent", 
-                                        input={"messages": [input_message]}, 
+                                        input={"messages": [input_message],"user_id":"1"}, 
                                         stream_mode="messages-tuple"):
         if event.event == 'messages':
             yield event.data[0]["content"]
