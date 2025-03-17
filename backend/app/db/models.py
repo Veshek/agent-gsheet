@@ -34,7 +34,7 @@ class File(Base):
     id = Column(Integer, primary_key=True, index=True)
     created_at = Column(String, nullable=False)  # timestamptz
     store_id = Column(Integer, ForeignKey("knowledge_stores.id"), nullable=False)
-    source = Column(String, nullable=False)  # Authenticator
+    source = Column(String, nullable=False)  # TODO: Update Type
     
     # Relationships
     knowledge_store = relationship("KnowledgeStore", back_populates="files")
@@ -60,8 +60,7 @@ class Token(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     access_token = Column(Text, nullable=False)
     refresh_token = Column(Text, nullable=False)
-    token_authenticator = Column(String, nullable=False)  # Authenticator
-    
+    token_authenticator = Column(String, nullable=False)  # TODO: Update Type
     # Relationships
     user = relationship("User", back_populates="tokens")
 
