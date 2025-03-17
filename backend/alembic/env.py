@@ -4,7 +4,7 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 from alembic import context
 from app.db.database import Base
-from app.db.models import User, KnowledgeStore, File, Thread, Token, Message, URL
+from app.db.models import User, KnowledgeStore, File, Thread, Token, Message
 
 # Load environment variables from .env file
 load_dotenv()
