@@ -18,3 +18,6 @@ JWT_REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("JWT_REFRESH_TOKEN_EXPIRE_DAYS", 7
 
 #LangGraph Server
 LANGGRAPH_SERVER= os.getenv("LANGGRAPH_SERVER","your_langgraph_server")
+
+#SQLALCHEMY Database
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./app.db")
