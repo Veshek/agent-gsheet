@@ -1,8 +1,27 @@
 import os
 from dotenv import load_dotenv
 
-# Load environment variables from the .env file
-load_dotenv()
+def reload_env():
+    # Clear relevant environment variables
+    env_vars = [
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET",
+        "GOOGLE_REDIRECT_URI",
+        "JWT_SECRET_KEY",
+        "JWT_ALGORITHM",
+        "JWT_ACCESS_TOKEN_EXPIRE_MINUTES",
+        "JWT_REFRESH_TOKEN_EXPIRE_DAYS"
+    ]
+    
+    for var in env_vars:
+        if var in os.environ:
+            del os.environ[var]
+    
+    # Reload environment variables from .env
+    load_dotenv(override=True)
+
+# Initial load of environment variables
+reload_env()
 
 # Google OAuth configuration
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "your_google_client_id")

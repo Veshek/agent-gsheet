@@ -3,6 +3,10 @@ from sqlalchemy.orm import Session
 import jwt
 from datetime import datetime, timedelta
 import requests
+import os
+import httpx
+from fastapi import FastAPI, HTTPException, status
+from fastapi.responses import RedirectResponse
 
 from app.db.database import get_db
 from app.models.schemas import OAuthCode
@@ -65,32 +69,45 @@ def refresh_google_token(refresh_token: str) -> dict:
         raise HTTPException(status_code=401, detail="Failed to refresh Google token")
     return response.json()
 
-@router.post("/google")
-def google_auth(oauth_code: OAuthCode, db: Session = Depends(get_db)):
-    """Handle the complete Google OAuth flow"""
-    # Exchange code for tokens
-    tokens = exchange_google_code(oauth_code.code)
-    
-    # Get user info from Google
-    user_info = get_google_user_info(tokens['access_token'])
-    
-    # Get or create user
-    user = User(db)
-    user = user.get_by_email(user_info['email'])
-    
-    if user:
-        # Update existing user's tokens
-        user.update_tokens(tokens)
-    else:
-        # Create new user
-        user.create(user_info, tokens) 
-    
-    # Create session token
-    session_token = create_session_token(user.id)
-    
-    return {
-        "session_token": session_token
+@router.get("/google")
+async def auth_callback(code: str = None, state: str = None):
+    """
+    TODO: 
+    - Identify user from the authorization code provided
+        1. If exists update the Token table with new access token and refresh token 
+        2. If not, create a new user and then add in the access and corresponding refresh token to the token table in the DB
+    - Generate a session token for the user and pass it back through a redirect, and store it in the header or 
+    as a Cookie 
+        1. How to decide which to do. We figure out the easiest and simplest way to store it, we want to move fast 
+    Redirect to the URL with the session stored in the query parameter 
+
+    - We can use the UserDB directly now to get it up and running and later if we create a service class then we 
+    can think about making the classes. It will get quite defocussed to do that at this point
+
+    """
+    # Check if the authorization code was provided
+    if not code:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Missing authorization code."
+        )
+
+    payload = {
+        "code": code,
+        "client_id": GOOGLE_CLIENT_ID,
+        "client_secret": GOOGLE_CLIENT_SECRET,
+        "redirect_uri": GOOGLE_REDIRECT_URI,
+        "grant_type": "authorization_code"
     }
+
+    response = requests.post(GOOGLE_TOKEN_URL, data=payload)
+    if response.status_code != 200:
+        raise HTTPException(
+            status_code=response.status_code,
+            detail=f"Failed to obtain token from Google : {response}"
+        )
+
+    return response.json()
 
 @router.post("/refresh")
 def refresh_session(expired_token: str, db: Session = Depends(get_db)):
