@@ -59,7 +59,7 @@ class Token(Base):
     created_at = Column(String, nullable=False)  # timestamptz
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     access_token = Column(Text, nullable=False)
-    refresh_token = Column(Text, nullable=False)
+    refresh_token = Column(Text, nullable=True)
     token_authenticator = Column(String, nullable=False)  # TODO: Update Type
     # Relationships
     user = relationship("User", back_populates="tokens")
