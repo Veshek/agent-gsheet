@@ -5,7 +5,7 @@ from app.db.database import Base
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     created_at = Column(String, nullable=False)  # timestamptz
     username = Column(String, nullable=False)
     email = Column(String, unique=True, index=True)
@@ -18,7 +18,7 @@ class User(Base):
 class KnowledgeStore(Base):
     __tablename__ = "knowledge_stores"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     created_at = Column(String, nullable=False)  # timestamptz
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     store_name = Column(String, nullable=False)
@@ -31,7 +31,7 @@ class KnowledgeStore(Base):
 class File(Base):
     __tablename__ = "files"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     created_at = Column(String, nullable=False)  # timestamptz
     store_id = Column(Integer, ForeignKey("knowledge_stores.id"), nullable=False)
     source = Column(String, nullable=False)  # TODO: Update Type
@@ -55,7 +55,7 @@ class Thread(Base):
 class Token(Base):
     __tablename__ = "tokens"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     created_at = Column(String, nullable=False)  # timestamptz
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     access_token = Column(Text, nullable=False)
