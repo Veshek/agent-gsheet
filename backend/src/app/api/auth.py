@@ -10,8 +10,8 @@ from fastapi.responses import RedirectResponse
 import json
 
 from app.db.database import get_db
+from app.db.models import User as UserDB
 from app.models.schemas import OAuthCode
-from app.models.user import User
 from app.core.config import (
     JWT_SECRET_KEY, 
     JWT_ALGORITHM,
@@ -203,7 +203,7 @@ def refresh_session(expired_token: str, db: Session = Depends(get_db)):
             raise HTTPException(status_code=401, detail="Invalid token format")
 
         # Get user and check refresh token
-        user = User(db).get_by_id(user_id)
+        user = UserDB(db).get_by_id(user_id)
         if not user or not user.google_refresh_token:
             raise HTTPException(status_code=401, detail="Invalid user or no refresh token")
 

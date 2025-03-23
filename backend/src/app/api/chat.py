@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 import asyncio
 
 from app.db.database import get_db
-from app.models.user import User
 from app.agents.react_agent import LangGraphAgent 
 from app.core.dependencies import get_current_user
 from langgraph_sdk import get_client
