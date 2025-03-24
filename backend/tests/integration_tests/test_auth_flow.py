@@ -10,10 +10,6 @@ from sqlalchemy.orm import sessionmaker
 import os, sys
 import sys
 import os
-
-# Add the src directory to sys.path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
-
 from app.core.config import (
     JWT_SECRET_KEY,
     JWT_ALGORITHM,
