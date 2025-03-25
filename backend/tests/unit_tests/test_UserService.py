@@ -43,9 +43,12 @@ def db(_setup_db):
     """Provide a transactional scope around a series of operations."""
     db_session = TestingSessionLocal()
     try:
+        Base.metadata.create_all(bind=engine)
+        UserService.set_Session(db_session)
         yield db_session
     finally:
         db_session.close()
+        Base.metadata.drop_all(bind=engine)
 
 
 @pytest.fixture(scope="function")
@@ -62,47 +65,48 @@ def client(db):
         yield c
     app.dependency_overrides.clear()
 
-def test_init():
-    """
-    Checks to see if the the UserService.__init__() method succesfully creates a UserService Object 
-    with None Values as the id and the email 
-    """
-    pass
-
 def test_create_user(db):
     """Test creating a user and check the database entry."""
-    user_service = UserService(db, username="testuser", email="test@example.com")
+    user_service = UserService.create_user(username="testuser", email="test@example.com")
     
     # Check if the user object is created correctly
-    assert user_service.user.id is not None  # Check if ID is generated
-    assert user_service.user.username == "testuser"
-    assert user_service.user.email == "test@example.com"
+    assert user_service.id is not None  # Check if ID is generated
+    assert user_service.username == "testuser"
+    assert user_service.email == "test@example.com"
 
     # Check the database for the new user entry
-    user_in_db = db.query(UserDB).filter(UserDB.id == user_service.user.id).first()
+    user_in_db = db.query(UserDB).filter(UserDB.id == user_service.id).first()
     assert user_in_db is not None  # User should exist in the database
     assert user_in_db.username == "testuser"
     assert user_in_db.email == "test@example.com"
 
-def test_get_user_by_id(db):
+def test_get_by_id(db):
     """Test retrieving a user by ID and check the database entry."""
-    user_service = UserService(db, username="testuser", email="test@example.com")
-    user = user_service.get_user_by_id(user_service.user.id)
+    new_user = UserDB(username="testuser", email="test@example.com")
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    user = UserService.get_by_id(new_user.id)
     
     assert user is not None
     assert user.username == "testuser"
     assert user.email == "test@example.com"
 
     # Check the database for the user entry
-    user_in_db = db.query(UserDB).filter(UserDB.id == user_service.user.id).first()
+    user_in_db = db.query(UserDB).filter(UserDB.id == new_user.id).first()
     assert user_in_db is not None  # User should exist in the database
     assert user_in_db.username == "testuser"
     assert user_in_db.email == "test@example.com"
 
 def test_get_user_by_email(db):
     """Test retrieving a user by email and check the database entry."""
-    user_service = UserService(db, username="testuser", email="test@example.com")
-    user = user_service.get_user_by_email("test@example.com")
+    new_user = UserDB(username="testuser", email="test@example.com")
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    user = UserService.get_by_email("test@example.com")
     
     assert user is not None
     assert user.username == "testuser"
